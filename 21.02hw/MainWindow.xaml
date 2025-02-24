@@ -1,0 +1,82 @@
+﻿<Window x:Class="hw.main_window"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Stationery"
+        Height="600"
+        Width="900">
+    
+    <Window.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FFFFFF" Offset="0" />
+            <GradientStop Color="#E0F7FA" Offset="1" />
+        </LinearGradientBrush>
+    </Window.Background>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ComboBox x:Name="combo_stationery_types"
+                  Margin="10"
+                  Width="200"
+                  DisplayMemberPath="typeName"
+                  SelectedValuePath="typeID"
+                  SelectionChanged="combo_stationery_types_selection_changed"/>
+        <DataGrid x:Name="data_grid_main"
+                  Grid.Row="1"
+                  Margin="10"
+                  Background="White"
+                  RowHeight="30"
+                  AutoGenerateColumns="True"
+                  IsReadOnly="True" />
+        
+        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="10">
+            
+            <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Show all stationery" Margin="5" Padding="10" Click="btn_show_all_stationery_click" />
+                    <Button Content="Show all managers" Margin="5" Padding="10" Click="btn_show_all_managers_click" />
+
+                    <Button Content="Show all types" Margin="5" Padding="10" Click="btn_show_all_types_click"/>
+                    <Button Content="Max quantity" Margin="5" Padding="10" Click="btn_show_max_quantity_click"/>
+                    <Button Content="Min quantity" Margin="5" Padding="10" Click="btn_show_min_quantity_click"/>
+                    <Button Content="Min cost price" Margin="5" Padding="10" Click="btn_show_min_cost_click"/>
+                    <Button Content="Max cost price" Margin="5" Padding="10" Click="btn_show_max_cost_click"/>
+                    <Button Content="Show by firm" Margin="5" Padding="10" Click="btn_show_stationery_by_firm_click"/>
+                    <Button Content="Show by manager" Margin="5" Padding="10" Click="btn_show_stationery_by_manager_click"/>
+                    <Button Content="Last sale" Margin="5" Padding="10" Click="btn_show_last_sale_click"/>
+                    <Button Content="Avg q by type" Margin="5" Padding="10" Click="btn_show_avg_qty_by_type_click"/>
+                    
+                    <Button Content="Add stationery" Margin="5" Padding="10" Click="btn_add_stationery_click"/>
+                    <Button Content="Update stationery" Margin="5" Padding="10" Click="btn_update_stationery_click"/>
+                    <Button Content="Delete stationery" Margin="5" Padding="10" Click="btn_delete_stationery_click"/>
+                </StackPanel>
+            </ScrollViewer>
+            
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+                <StackPanel Margin="5">
+                    <TextBlock Text="Name:" Margin="0,0,0,5" />
+                    <TextBox x:Name="tbNewStationeryName" Width="120"/>
+                </StackPanel>
+                <StackPanel Margin="5">
+                    <TextBlock Text="Quantity:" Margin="0,0,0,5" />
+                    <TextBox x:Name="tbNewStationeryQuantity" Width="60"/>
+                </StackPanel>
+                <StackPanel Margin="5">
+                    <TextBlock Text="Cost price:" Margin="0,0,0,5" />
+                    <TextBox x:Name="tbNewStationeryCostPrice" Width="60"/>
+                </StackPanel>
+                <StackPanel Margin="5">
+                    <TextBlock Text="Type:" Margin="0,0,0,5" />
+                    <ComboBox x:Name="cbNewStationeryType"
+                              Width="120"
+                              DisplayMemberPath="typeName"
+                              SelectedValuePath="typeID"/>
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</Window>
