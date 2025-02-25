@@ -5,7 +5,7 @@ namespace _21._02hw.Models;
 
 public partial class Manager
 {
-    public int ManagerID { get; set; }
+    public int ManagerId { get; set; }
 
     public string FullName { get; set; } = null!;
 

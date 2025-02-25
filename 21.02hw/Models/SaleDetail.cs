@@ -5,11 +5,11 @@ namespace _21._02hw.Models;
 
 public partial class SaleDetail
 {
-    public int SaleDetailID { get; set; }
+    public int SaleDetailId { get; set; }
 
-    public int SaleID { get; set; }
+    public int SaleId { get; set; }
 
-    public int StationeryID { get; set; }
+    public int StationeryId { get; set; }
 
     public int QuantitySold { get; set; }
 

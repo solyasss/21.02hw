@@ -5,7 +5,7 @@ namespace _21._02hw.Models;
 
 public partial class Firm
 {
-    public int FirmID { get; set; }
+    public int FirmId { get; set; }
 
     public string FirmName { get; set; } = null!;
 

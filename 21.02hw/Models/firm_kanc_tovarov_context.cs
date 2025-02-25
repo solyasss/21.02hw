@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace _21._02hw.Models;
 
-public partial class firm_kanc_tovarov_context : DbContext
+public partial class FirmKancTovarovContext : DbContext
 {
-    public firm_kanc_tovarov_context()
+    public FirmKancTovarovContext()
     {
     }
 
-    public firm_kanc_tovarov_context(DbContextOptions<firm_kanc_tovarov_context> options)
+    public FirmKancTovarovContext(DbContextOptions<FirmKancTovarovContext> options)
         : base(options)
     {
     }
@@ -35,69 +35,80 @@ public partial class firm_kanc_tovarov_context : DbContext
     {
         modelBuilder.Entity<Firm>(entity =>
         {
-            entity.HasKey(e => e.FirmID).HasName("PK__Firms__1F1F20FC85B9FF5F");
+            entity.HasKey(e => e.FirmId).HasName("PK__Firms__1F1F20FC7569FC76");
 
+            entity.Property(e => e.FirmId).HasColumnName("FirmID");
             entity.Property(e => e.FirmName).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Manager>(entity =>
         {
-            entity.HasKey(e => e.ManagerID).HasName("PK__Managers__3BA2AA8153957BED");
+            entity.HasKey(e => e.ManagerId).HasName("PK__Managers__3BA2AA81981DDB3E");
 
+            entity.Property(e => e.ManagerId).HasColumnName("ManagerID");
             entity.Property(e => e.FullName).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Sale>(entity =>
         {
-            entity.HasKey(e => e.SaleID).HasName("PK__Sales__1EE3C41F710FCBD7");
+            entity.HasKey(e => e.SaleId).HasName("PK__Sales__1EE3C41FAD5EA4CD");
 
+            entity.Property(e => e.SaleId).HasColumnName("SaleID");
+            entity.Property(e => e.FirmId).HasColumnName("FirmID");
+            entity.Property(e => e.ManagerId).HasColumnName("ManagerID");
             entity.Property(e => e.SaleDate).HasDefaultValueSql("(sysutcdatetime())");
 
             entity.HasOne(d => d.Firm).WithMany(p => p.Sales)
-                .HasForeignKey(d => d.FirmID)
+                .HasForeignKey(d => d.FirmId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Sales_FirmID");
 
             entity.HasOne(d => d.Manager).WithMany(p => p.Sales)
-                .HasForeignKey(d => d.ManagerID)
+                .HasForeignKey(d => d.ManagerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Sales_ManagerID");
         });
 
         modelBuilder.Entity<SaleDetail>(entity =>
         {
-            entity.HasKey(e => e.SaleDetailID).HasName("PK__SaleDeta__70DB141E95CE40A4");
+            entity.HasKey(e => e.SaleDetailId).HasName("PK__SaleDeta__70DB141E29066806");
 
+            entity.Property(e => e.SaleDetailId).HasColumnName("SaleDetailID");
             entity.Property(e => e.PriceEach).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.SaleId).HasColumnName("SaleID");
+            entity.Property(e => e.StationeryId).HasColumnName("StationeryID");
 
             entity.HasOne(d => d.Sale).WithMany(p => p.SaleDetails)
-                .HasForeignKey(d => d.SaleID)
+                .HasForeignKey(d => d.SaleId)
                 .HasConstraintName("FK_SaleDetails_SaleID");
 
             entity.HasOne(d => d.Stationery).WithMany(p => p.SaleDetails)
-                .HasForeignKey(d => d.StationeryID)
+                .HasForeignKey(d => d.StationeryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SaleDetails_StationeryID");
         });
 
         modelBuilder.Entity<Stationery>(entity =>
         {
-            entity.HasKey(e => e.StationeryID).HasName("PK__Statione__53026DE31A912B11");
+            entity.HasKey(e => e.StationeryId).HasName("PK__Statione__53026DE3243EF3D2");
 
             entity.ToTable("Stationery");
 
+            entity.Property(e => e.StationeryId).HasColumnName("StationeryID");
             entity.Property(e => e.CostPrice).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Name).HasMaxLength(255);
+            entity.Property(e => e.TypeId).HasColumnName("TypeID");
 
             entity.HasOne(d => d.Type).WithMany(p => p.Stationeries)
-                .HasForeignKey(d => d.TypeID)
+                .HasForeignKey(d => d.TypeId)
                 .HasConstraintName("FK_Stationery_TypeID");
         });
 
         modelBuilder.Entity<StationeryType>(entity =>
         {
-            entity.HasKey(e => e.TypeID).HasName("PK__Statione__516F0395787F69B0");
+            entity.HasKey(e => e.TypeId).HasName("PK__Statione__516F039561CD5ED2");
 
+            entity.Property(e => e.TypeId).HasColumnName("TypeID");
             entity.Property(e => e.TypeName).HasMaxLength(100);
         });
 

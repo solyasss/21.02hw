@@ -5,7 +5,7 @@ namespace _21._02hw.Models;
 
 public partial class StationeryType
 {
-    public int TypeID { get; set; }
+    public int TypeId { get; set; }
 
     public string TypeName { get; set; } = null!;
 

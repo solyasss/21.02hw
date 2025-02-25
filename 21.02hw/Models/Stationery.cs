@@ -5,11 +5,11 @@ namespace _21._02hw.Models;
 
 public partial class Stationery
 {
-    public int StationeryID { get; set; }
+    public int StationeryId { get; set; }
 
     public string Name { get; set; } = null!;
 
-    public int TypeID { get; set; }
+    public int TypeId { get; set; }
 
     public int Quantity { get; set; }
 

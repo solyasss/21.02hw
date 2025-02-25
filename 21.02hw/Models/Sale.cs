@@ -5,13 +5,13 @@ namespace _21._02hw.Models;
 
 public partial class Sale
 {
-    public int SaleID { get; set; }
+    public int SaleId { get; set; }
 
     public DateTime SaleDate { get; set; }
 
-    public int ManagerID { get; set; }
+    public int ManagerId { get; set; }
 
-    public int FirmID { get; set; }
+    public int FirmId { get; set; }
 
     public virtual Firm Firm { get; set; } = null!;
 
