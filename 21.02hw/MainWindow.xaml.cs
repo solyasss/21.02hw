@@ -1,33 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.EntityFrameworkCore;
+using Dapper;
 using _21._02hw.Models;
 
 namespace hw
 {
     public partial class main_window : Window
-    { 
-        private FirmKancTovarovContext _context;
+    {
+        private DapperContext _context;
 
         public main_window()
         {
             InitializeComponent();
-            _context = new FirmKancTovarovContext();
+            _context = new DapperContext("Server=DESKTOP-IB673J5\\SQLEXPRESS;Database=FirmKancTovarov;Trusted_Connection=True;TrustServerCertificate=True;");
             load_stationery_types();
             load_type_combo_for_new_stationery();
         }
 
         private void load_stationery_types()
         {
-            var types = _context.StationeryTypes.FromSqlRaw("EXEC sp_get_all_types").ToList();
+            var types = _context.Query<StationeryType>("EXEC sp_get_all_types");
             combo_stationery_types.ItemsSource = types;
         }
 
         private void load_type_combo_for_new_stationery()
         {
-            var types = _context.StationeryTypes.FromSqlRaw("EXEC sp_get_all_types").ToList();
+            var types = _context.Query<StationeryType>("EXEC sp_get_all_types");
             cbNewStationeryType.ItemsSource = types;
         }
 
@@ -36,63 +37,48 @@ namespace hw
             if (combo_stationery_types.SelectedValue != null)
             {
                 int selected_type_id = (int)combo_stationery_types.SelectedValue;
-                var stationery_by_type = _context.Stationeries
-                    .FromSqlRaw("EXEC sp_get_stationery_by_type @type_id = {0}", selected_type_id)
-                    .ToList();
+                var stationery_by_type = _context.Query<Stationery>("EXEC sp_get_stationery_by_type @type_id = @typeId", new { typeId = selected_type_id });
                 data_grid_main.ItemsSource = stationery_by_type;
             }
         }
 
         private void btn_show_all_stationery_click(object sender, RoutedEventArgs e)
         {
-            var all_stationery = _context.Stationeries
-                .FromSqlRaw("EXEC sp_get_all_stationery")
-                .ToList();
+            var all_stationery = _context.Query<Stationery>("EXEC sp_get_all_stationery");
             data_grid_main.ItemsSource = all_stationery;
         }
 
         private void btn_show_all_managers_click(object sender, RoutedEventArgs e)
         {
-            var all_managers = _context.Managers
-                .FromSqlRaw("EXEC sp_get_all_managers")
-                .ToList();
+            var all_managers = _context.Query<Manager>("EXEC sp_get_all_managers");
             data_grid_main.ItemsSource = all_managers;
         }
 
         private void btn_show_stationery_by_manager_click(object sender, RoutedEventArgs e)
         {
             int managerId = 1;
-            var stationery_by_manager = _context.Stationeries
-                .FromSqlRaw("EXEC sp_get_stationery_by_manager @manager_id = {0}", managerId)
-                .ToList();
+            var stationery_by_manager = _context.Query<Stationery>("EXEC sp_get_stationery_by_manager @manager_id = @managerId", new { managerId });
             data_grid_main.ItemsSource = stationery_by_manager;
         }
 
         private void btn_show_stationery_by_firm_click(object sender, RoutedEventArgs e)
         {
             int firmId = 2;
-            var stationery_by_firm = _context.Stationeries
-                .FromSqlRaw("EXEC sp_get_stationery_by_firm @firm_id = {0}", firmId)
-                .ToList();
+            var stationery_by_firm = _context.Query<Stationery>("EXEC sp_get_stationery_by_firm @firm_id = @firmId", new { firmId });
             data_grid_main.ItemsSource = stationery_by_firm;
         }
 
         private void btn_show_last_sale_click(object sender, RoutedEventArgs e)
         {
-            var last_sale = _context.Sales
-                .FromSqlRaw("EXEC sp_get_last_sale")
-                .ToList();
+            var last_sale = _context.Query<Sale>("EXEC sp_get_last_sale");
             data_grid_main.ItemsSource = last_sale;
         }
-        
-            private void btn_show_avg_qty_by_type_click(object sender, RoutedEventArgs e)
-            {
-                var avgQuantityByType = _context.Set<AvgQuantityByTypeResult>()
-                    .FromSqlRaw("EXEC sp_get_avg_quantity_by_type")
-                    .ToList();
-                data_grid_main.ItemsSource = avgQuantityByType;
-            }
 
+        private void btn_show_avg_qty_by_type_click(object sender, RoutedEventArgs e)
+        {
+            var avgQuantityByType = _context.Query<AvgQuantityByTypeResult>("EXEC sp_get_avg_quantity_by_type");
+            data_grid_main.ItemsSource = avgQuantityByType;
+        }
 
         private void btn_add_stationery_click(object sender, RoutedEventArgs e)
         {
@@ -124,8 +110,8 @@ namespace hw
 
             int typeId = (int)cbNewStationeryType.SelectedValue;
 
-            _context.Database.ExecuteSqlRaw("EXEC sp_insert_stationery @name = {0}, @type_id = {1}, @quantity = {2}, @cost_price = {3}", 
-                newName, typeId, newQuantity, newCost);
+            _context.Execute("EXEC sp_insert_stationery @name = @name, @type_id = @typeId, @quantity = @quantity, @cost_price = @costPrice",
+                new { name = newName, typeId, quantity = newQuantity, costPrice = newCost });
 
             MessageBox.Show("Product added");
             btn_show_all_stationery_click(null, null);
@@ -141,8 +127,8 @@ namespace hw
                 return;
             }
 
-            _context.Database.ExecuteSqlRaw("EXEC sp_update_stationery @stationery_id = {0}, @quantity = {1}", 
-                selectedItem.StationeryId, 999);
+            _context.Execute("EXEC sp_update_stationery @stationery_id = @stationeryId, @quantity = @quantity",
+                new { stationeryId = selectedItem.StationeryId, quantity = 999 });
 
             MessageBox.Show("Quantity changed for stationery");
             btn_show_all_stationery_click(null, null);
@@ -158,7 +144,7 @@ namespace hw
                 return;
             }
 
-            _context.Database.ExecuteSqlRaw("EXEC sp_delete_stationery @stationery_id = {0}", selectedItem.StationeryId);
+            _context.Execute("EXEC sp_delete_stationery @stationery_id = @stationeryId", new { stationeryId = selectedItem.StationeryId });
 
             MessageBox.Show($"Product '{selectedItem.Name}' (ID={selectedItem.StationeryId}) deleted");
             btn_show_all_stationery_click(null, null);
@@ -166,39 +152,31 @@ namespace hw
 
         private void btn_show_all_types_click(object sender, RoutedEventArgs e)
         {
-            var types = _context.StationeryTypes.FromSqlRaw("EXEC sp_get_all_types").ToList();
+            var types = _context.Query<StationeryType>("EXEC sp_get_all_types");
             data_grid_main.ItemsSource = types;
         }
 
         private void btn_show_max_quantity_click(object sender, RoutedEventArgs e)
         {
-            var max_quantity_stationery = _context.Stationeries
-                .FromSqlRaw("EXEC sp_get_max_quantity_stationery")
-                .ToList();
+            var max_quantity_stationery = _context.Query<Stationery>("EXEC sp_get_max_quantity_stationery");
             data_grid_main.ItemsSource = max_quantity_stationery;
         }
 
         private void btn_show_min_quantity_click(object sender, RoutedEventArgs e)
         {
-            var min_quantity_stationery = _context.Stationeries
-                .FromSqlRaw("EXEC sp_get_min_quantity_stationery")
-                .ToList();
+            var min_quantity_stationery = _context.Query<Stationery>("EXEC sp_get_min_quantity_stationery");
             data_grid_main.ItemsSource = min_quantity_stationery;
         }
 
         private void btn_show_min_cost_click(object sender, RoutedEventArgs e)
         {
-            var min_cost_stationery = _context.Stationeries
-                .FromSqlRaw("EXEC sp_get_min_cost_stationery")
-                .ToList();
+            var min_cost_stationery = _context.Query<Stationery>("EXEC sp_get_min_cost_stationery");
             data_grid_main.ItemsSource = min_cost_stationery;
         }
 
         private void btn_show_max_cost_click(object sender, RoutedEventArgs e)
         {
-            var max_cost_stationery = _context.Stationeries
-                .FromSqlRaw("EXEC sp_get_max_cost_stationery")
-                .ToList();
+            var max_cost_stationery = _context.Query<Stationery>("EXEC sp_get_max_cost_stationery");
             data_grid_main.ItemsSource = max_cost_stationery;
         }
     }
